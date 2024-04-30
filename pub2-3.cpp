@@ -9,12 +9,10 @@
 using namespace std::chrono_literals;
 void callback(rclcpp::Node::SharedPtr node, rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr pub)
 {
-    //static int count;
     //auto message = std_msgs::msg::String();
     auto input = geometry_msgs::msg::Twist();
-    input.linear.x=8.0;
-    input.angular.z=2.0;
-    //message.data = "Hello world! " + std::to_string(count++);
+    input.linear.x=8.0;//직진속도 8
+    input.angular.z=2.0;//각속도 2로 거북이 움직임
     RCLCPP_INFO(node->get_logger(), "linear.x: %f angular.z: %f", input.linear.x, input.angular.z);
     pub->publish(input);
     
@@ -25,6 +23,7 @@ int main(int argc, char* argv[])
     auto node = std::make_shared<rclcpp::Node>("mynode");
     auto qos_profile = rclcpp::QoS(rclcpp::KeepLast(10));
     auto pub = node->create_publisher<geometry_msgs::msg::Twist>("/turtle1/cmd_vel", qos_profile);
+    ///turtle1/cmd_vel으로 퍼블리시하는 퍼블리셔 생성. 
     std::function<void()> fn = std::bind(callback, node, pub);
     auto timer = node->create_wall_timer(1s, fn);
     rclcpp::spin(node);
